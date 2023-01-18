@@ -2,15 +2,18 @@ const fs = require("fs");
 const request = require("request");
 
 module.exports = {
+  // PWD command display the Present Working Directory
   pwd: function (args, done) {
     let pwd = process.argv;
     const output = pwd[0];
     done(output);
   },
+  // DATE command dsipalys the current date
   date: function (args, done) {
     let date = new Date().toString();
     done(date);
   },
+  //LS command list directory contents
   ls: function (args, done) {
     fs.readdir(".", function (err, files) {
       if (err) throw err;
@@ -21,6 +24,7 @@ module.exports = {
       done(output);
     });
   },
+  //ECHO command diplays text to the terminal window
   echo: function (args, done) {
     let result = "";
     args.forEach((arg) => {
@@ -33,6 +37,7 @@ module.exports = {
     });
     done(result);
   },
+  // CAT command display file contents in terminal window
   cat: function (args, done) {
     const fileName = args.join(" ");
     fs.readFile(fileName, (err, data) => {
@@ -40,6 +45,7 @@ module.exports = {
       done(data);
     });
   },
+  // HEAD command displays the first 10 lines of a file
   head: function (args, done) {
     const fileName = args.join(" ");
     fs.readFile(fileName, (err, data) => {
@@ -50,6 +56,7 @@ module.exports = {
       done(slicedText);
     });
   },
+  // TAIL command displays the last 10 lines of a file
   tail: function (args, done) {
     const fileName = args.join(" ");
     fs.readFile(fileName, (err, data) => {
@@ -60,6 +67,7 @@ module.exports = {
       done(slicedText);
     });
   },
+  // SORT command sorts the contents of a text file, line by line.
   sort: function (args, done) {
     const fileName = args.join(" ");
     fs.readFile(fileName, (err, data) => {
@@ -68,6 +76,7 @@ module.exports = {
       done(output);
     });
   },
+  // returns the word count of a file
   wc: function (args, done) {
     const fileName = args.join(" ");
     fs.readFile(fileName, (err, data) => {
@@ -76,6 +85,7 @@ module.exports = {
       done(output);
     });
   },
+  // UNIQ command filters out the adjacent matching lines from the input file(that is required as an argument) and writes the filtered data to the output file. 
   uniq: function (args, done) {
     const fileName = args.join(" ");
     fs.readFile(fileName, (err, data) => {
@@ -92,6 +102,7 @@ module.exports = {
       done(output);
     });
   },
+  // CURL command enables data transfer over various network protocols. It communicates with a web or application server by specifying a relevant URL and the data that need to be sent or received.
   curl: function (url, done) {
     let urlString = url.toString();
     request(urlString, function (error, response, body) {
