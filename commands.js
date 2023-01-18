@@ -2,73 +2,82 @@ const fs = require("fs");
 const request = require("request");
 
 module.exports = {
-  pwd: function (cmd, done) {
+  pwd: function (args, done) {
     let pwd = process.argv;
     const output = pwd[0];
     done(output);
   },
-  date: function (cmd, done) {
+  date: function (args, done) {
     let date = new Date().toString();
     done(date);
   },
-  ls: function (cmd, done) {
+  ls: function (args, done) {
     fs.readdir(".", function (err, files) {
-      let output = "";
       if (err) throw err;
-     files.forEach(function (file) {
+      let output = "";
+      files.forEach(function (file) {
         output += file.toString() + "\n";
       });
       done(output);
     });
   },
-  echo: function (data, done) {
-    let str = data.toString().split(" ").slice(1).join(" ");
-    done(str)
+  echo: function (args, done) {
+    let result = "";
+    args.forEach((arg) => {
+      // check if the argumnet exist in enviroment variables ($)
+      if (process.env[arg.slice(1)]) {
+        result += process.env[arg.slice(1)];
+      } else {
+        result += arg + " ";
+      }
+    });
+    done(result);
   },
-  cat: function (fullPath, done) {
-    const fileName = fullPath.toString().split(" ").slice(1).join(" ");
+  cat: function (args, done) {
+    const fileName = args.join(" ");
     fs.readFile(fileName, (err, data) => {
       if (err) throw err;
-      let str = data.toString().split(" ").join(" ");
-      done(str)
+      done(data);
     });
   },
-  head: function (data, done) {
-    const fileName = data.toString().split(" ").slice(1).join(" ");
+  head: function (args, done) {
+    const fileName = args.join(" ");
     fs.readFile(fileName, (err, data) => {
       if (err) throw err;
+      // modify data to utf8
       let text = data.toString("utf8");
-      let slicedText = text.split("\n").slice(0, 5).join("\n");
+      let slicedText = text.split("\n").slice(0, 10).join("\n");
       done(slicedText);
     });
   },
-  tail: function (data, done) {
-    const fileName = data.toString().split(" ").slice(1).join(" ");
+  tail: function (args, done) {
+    const fileName = args.join(" ");
     fs.readFile(fileName, (err, data) => {
       if (err) throw err;
+      // modify data to utf8
       let text = data.toString("utf8");
-      let slicedText = text.split("\n").slice(-5).join("\n");
+      let slicedText = text.split("\n").slice(-10).join("\n");
       done(slicedText);
     });
   },
-  sort: function (data, done) {
-    const fileName = data.toString().split(" ").slice(1).join(" ");
+  sort: function (args, done) {
+    const fileName = args.join(" ");
     fs.readFile(fileName, (err, data) => {
       if (err) throw err;
-      let output = data.toString().split("\n").sort().join("\n").trim()
+      let output = data.toString().split("\n").sort().join("\n").trim();
       done(output);
     });
   },
-  wc: function (data, done) {
-    const fileName = data.toString().split(" ").slice(1).join(" ");
+  wc: function (args, done) {
+    const fileName = args.join(" ");
     fs.readFile(fileName, (err, data) => {
       if (err) throw err;
       let output = data.toString().split("\n").length.toString();
       done(output);
     });
   },
-  uniq: function (data, done) {
-    const fileName = data.toString().split(" ").slice(1).join(" ");
+  uniq: function (args, done) {
+    const fileName = args.join(" ");
     fs.readFile(fileName, (err, data) => {
       if (err) throw err;
       const filtered = data
@@ -79,12 +88,12 @@ module.exports = {
           if (lastItem !== el) acc.push(el);
           return acc;
         }, []);
-        let output = filtered.join("\n");
+      let output = filtered.join("\n");
       done(output);
     });
   },
   curl: function (url, done) {
-    let urlString = url.toString().split(" ").slice(1).join(" ");
+    let urlString = url.toString();
     request(urlString, function (error, response, body) {
       console.error("error:", error); // Print the error if one occurred
       console.log("statusCode:", response && response.statusCode); // Print the response status code if a response was received
